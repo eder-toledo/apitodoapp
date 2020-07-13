@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Task;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -14,9 +15,23 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class TaskRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, EntityManagerInterface $manager)
     {
         parent::__construct($registry, Task::class);
+        $this->manager = $manager;
+    }
+
+    public function saveTask($name, $description, $completed, $start, $end){
+        $newTask = new Task();
+
+        $newTask->setName($name)
+                ->setDescription($description)
+                ->setCompleted($completed)
+                ->setStart($start)
+                ->setEnd($end);
+
+        $this->manager->persist($newTask);
+        $this->manager->flush();
     }
 
     // /**
