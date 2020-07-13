@@ -32,15 +32,15 @@ use Symfony\Component\Routing\Annotation\Route;
     public function add(Request $request): JsonResponse{
         $data = json_decode($request->getContent(), true);
 
+        if (empty($data['name']) || empty($data['completed'])) {
+            throw new NotFoundHttpException('Expecting mandatory parameters!');
+        }
+
         $name = $data['name'];
-        $description = $data['description'];
+        $description = empty($data['description']) ? NULL : $data['description'];;
         $completed = $data['completed'];
         $start = empty($data['start']) ? NULL : $data['start'];
         $end = empty($data['end']) ? NULL : $data['end'];
-
-        if (empty($name) || empty($completed)) {
-            throw new NotFoundHttpException('Expecting mandatory parameters!');
-        }
 
         $this->taskRepository->saveTask($name, $description, $completed, $start, $end);
 
