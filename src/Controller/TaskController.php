@@ -27,6 +27,24 @@ use Symfony\Component\Routing\Annotation\Route;
      }
 
     /**
+    * @Route("task/{id}", name="get_one_task", methods={"GET"})
+    */
+    public function get($id): JsonResponse{
+        $task = $this->taskRepository->findOneBy(['id' => $id]);
+
+        $data = [
+            'id' => $task->getId(),
+            'name' => $task->getName(),
+            'description' => $task->getDescription(),
+            'completed' => $task->getCompleted(),
+            'start' => $task->getStart(),
+            'end' => $task->getEnd()
+        ];
+
+        return new JsonResponse($data, Response::HTTP_OK);
+    }
+
+    /**
     * @Route("task", name="add_task", methods={"POST"})
     */
     public function add(Request $request): JsonResponse{
