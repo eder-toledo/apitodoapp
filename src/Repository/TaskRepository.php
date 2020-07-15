@@ -21,16 +21,32 @@ class TaskRepository extends ServiceEntityRepository
         $this->manager = $manager;
     }
 
-    public function saveTask($name, $description, $completed, $start, $end){
+    public function saveTask($name, $description, $completed, $start, $end)
+    {
         $newTask = new Task();
 
         $newTask->setName($name)
-                ->setDescription($description)
-                ->setCompleted($completed)
-                ->setStart($start)
-                ->setEnd($end);
+            ->setDescription($description)
+            ->setCompleted($completed)
+            ->setStart($start)
+            ->setEnd($end);
 
         $this->manager->persist($newTask);
+        $this->manager->flush();
+    }
+
+    public function updateTask(Task $task): Task
+    {
+        $this->manager->persist($task);
+        $this->manager->flush();
+
+        return $task;
+    }
+
+
+    public function removeTask(Task $task)
+    {
+        $this->manager->remove($task);
         $this->manager->flush();
     }
 
