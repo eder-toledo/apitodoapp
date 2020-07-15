@@ -16,20 +16,21 @@ use Symfony\Component\Routing\Annotation\Route;
  * @Route("/api/")
  */
 
- class TaskController
- {
+class TaskController
+{
 
-     private $taskRepository;
+    private $taskRepository;
 
-     public function __construct(TaskRepository $taskRepository)
-     {
-         $this->taskRepository = $taskRepository;
-     }
+    public function __construct(TaskRepository $taskRepository)
+    {
+        $this->taskRepository = $taskRepository;
+    }
 
     /**
-    * @Route("task/{id}", name="get_one_task", methods={"GET"})
-    */
-    public function get($id): JsonResponse{
+     * @Route("task/{id}", name="get_one_task", methods={"GET"})
+     */
+    public function get($id): JsonResponse
+    {
         $task = $this->taskRepository->findOneBy(['id' => $id]);
 
         $data = [
@@ -45,9 +46,32 @@ use Symfony\Component\Routing\Annotation\Route;
     }
 
     /**
-    * @Route("task", name="add_task", methods={"POST"})
-    */
-    public function add(Request $request): JsonResponse{
+     * @Route("tasks", name="get_all_tasks", methods={"GET"})
+     */
+    public function getAll(): JsonResponse
+    {
+        $tasks = $this->taskRepository->findAll();
+        $data = [];
+
+        foreach ($tasks as $task) {
+            $data[] = [
+                'id' => $task->getId(),
+                'name' => $task->getName(),
+                'description' => $task->getDescription(),
+                'completed' => $task->getCompleted(),
+                'start' => $task->getStart(),
+                'end' => $task->getEnd()
+            ];
+        }
+
+        return new JsonResponse($data, Response::HTTP_OK);
+    }
+
+    /**
+     * @Route("task", name="add_task", methods={"POST"})
+     */
+    public function add(Request $request): JsonResponse
+    {
         $data = json_decode($request->getContent(), true);
 
         if (empty($data['name']) || empty($data['completed'])) {
@@ -64,4 +88,4 @@ use Symfony\Component\Routing\Annotation\Route;
 
         return new JsonResponse(['status' => 'Task created!'], Response::HTTP_CREATED);
     }
- }
+}
